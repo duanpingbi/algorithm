@@ -1,17 +1,23 @@
 //apply的实现类似于call,参数为数组
-Function.prototype.myApply = function (context = window,arg){
-    if(typeof this === 'function'){
-        return undefined;
-    }
-    context = context || window;
-    const fn = new Symbol();
+Function.prototype.myapply = function(context = window,arg){
+    const fn = Symbol();
     context[fn] = this;
     let result;
-    if(Array.isArray(arg)){
+    if(arg){
         result = context[fn](...arg);
-    } else{
-        result = context[fn]();//处理不传参数的情况
+    } else {
+        result = context[fn]();
     }
     delete context[fn];
     return result;
 }
+
+var obj = {
+    a:1
+}
+ function print(...arg){
+     console.log(this.a);
+     console.log(...arg);
+ }
+
+ print.myapply(obj,[1,2,3]);

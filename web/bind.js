@@ -1,16 +1,28 @@
-//实现步骤：
-//1.处理参数，返回闭包
-//2.判断是否为构造函数调用，如果是则使用new调用当前函数
-//3.如果不是，使用apply，将context和处理好的参数传入
-Function.prototype.myBind = function(context,...arg){
-    if(this === Function.prototype){
-        throw new TypeError('Error');
+/**
+ * 实现一个bind函数：
+ * 一个bind函数主要做了以下的事情：
+ * 1.返回一个函数，绑定this，传递预置参数
+ * 2.bind返回的函数可以作为构造函数使用，所以作为构造函数的时候this失效，但是传入的参数依旧有效。
+ */
+Function.prototype.mybind = function(context){
+    if(typeof this !== 'function'){
+        throw Error(this+'is not a function');
     }
-    const _this = this;
-    return function F(...arg1){
-        if(this instanceof F){
-            return new _this(...arg,...arg1);
-        } 
-        return _this.apply(context,arg.concat(arg1));
+    let self = this;
+    let arg = Array.prototype.slice.call(arguments,1);
+    var fn = function(){
+        self.apply(this instanceof this?this:context,arg.concat(Array.prototype.slice(arguments)));
     }
+    fn.prototype = Object.create(self.prototype);
+    return fn;
 }
+
+var obj = {
+    a:1,
+    b:2
+}
+
+function print(){
+    console.log(this.a);
+}
+print.bind(obj)();
